@@ -117,9 +117,7 @@ class BasePlugin:
         try:
             headers = {'content-type': 'application/json'}
             response_shelly = requests.get(f"http://{self.address}/settings", headers=headers, auth=(self.username, self.password), timeout=(10, 10))
-            
-            if Domoticz.Debugging():
-                Domoticz.Debug("Shelly settings response: " + response_shelly.text)
+            Domoticz.Debug("Shelly settings response: " + response_shelly.text)
                 
             json_items = json.loads(response_shelly.text)
             response_shelly.close()
@@ -327,6 +325,7 @@ class BasePlugin:
             try:
                 request_shelly_status = requests.get(f"http://{self.address}/status", headers=headers, auth=(self.username, self.password), timeout=(10, 10))
                 Domoticz.Debug(request_shelly_status.text)
+                
                 json_request = json.loads(request_shelly_status.text)
                 if self.device_type == self.SHELLY_1 or self.device_type == self.SHELLY_PLUG or self.device_type == self.SHELLY_1PM or self.device_type == self.SHELLY_1L:
                     updateSHSW1(json_request, self)
