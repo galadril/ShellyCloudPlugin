@@ -323,37 +323,49 @@ class BasePlugin:
         if self.device_type != "SHDW-2":
             headers = {'content-type': 'application/json'}
             try:
-                request_shelly_status = requests.get(f"http://{self.address}/status", headers=headers, auth=(self.username, self.password), timeout=(10, 10))
-                Domoticz.Debug(request_shelly_status.text)
-                
-                json_request = json.loads(request_shelly_status.text)
-                if self.device_type == self.SHELLY_1 or self.device_type == self.SHELLY_PLUG or self.device_type == self.SHELLY_1PM or self.device_type == self.SHELLY_1L:
-                    updateSHSW1(json_request, self)
-                elif self.device_type == self.SHELLY_25:
-                    updateSHSW25(json_request, self)
-                elif self.device_type == self.SHELLY_MOTION:
-                    updateMOTION(json_request)
-                elif self.device_type == self.SHELLY_TRV:
-                    updateTRV(self, json_request)
-                elif self.device_type == self.SHELLY_DIMMER:
-                    updateSHDM1(json_request, self)
-                elif self.device_type == self.SHELLY_RGBW2 or self.device_type == self.SHELLY_BULB:
-                    updateSHRGBW2(json_request, self)
-                elif self.device_type == self.SHELLY_SMOKE:
-                    updateSMOKE(json_request)
-                elif self.device_type == self.SHELLY_HT:
-                    updateHT(json_request)
-                elif self.device_type == self.SHELLY_FLOOD:
-                    updateFlood(json_request)
-                elif self.device_type == self.SHELLY_GAS:
-                    updateGAS(self, json_request)
-                elif self.device_type == self.SHELLY_EM or self.device_type == self.SHELLY_3EM:
-                    updateEM(json_request, self)
-                elif self.device_type == self.SHELLY_IX3:
-                    updateSHIX3(json_request)
+                request_shelly_status = requests.get(
+                    f"http://{self.address}/status",
+                    headers=headers,
+                    auth=(self.username, self.password),
+                    timeout=(10, 10)
+                )
+                Domoticz.Debug(f"Response status code: {request_shelly_status.status_code}")
+                Domoticz.Debug(f"Response text: {request_shelly_status.text}")
+    
+                if request_shelly_status.text and request_shelly_status.status_code == 200:
+                    json_request = json.loads(request_shelly_status.text)
+                    if self.device_type == self.SHELLY_1 or self.device_type == self.SHELLY_PLUG or self.device_type == self.SHELLY_1PM or self.device_type == self.SHELLY_1L:
+                        updateSHSW1(json_request, self)
+                    elif self.device_type == self.SHELLY_25:
+                        updateSHSW25(json_request, self)
+                    elif self.device_type == self.SHELLY_MOTION:
+                        updateMOTION(json_request)
+                    elif self.device_type == self.SHELLY_TRV:
+                        updateTRV(self, json_request)
+                    elif self.device_type == self.SHELLY_DIMMER:
+                        updateSHDM1(json_request, self)
+                    elif self.device_type == self.SHELLY_RGBW2 or self.device_type == self.SHELLY_BULB:
+                        updateSHRGBW2(json_request, self)
+                    elif self.device_type == self.SHELLY_SMOKE:
+                        updateSMOKE(json_request)
+                    elif self.device_type == self.SHELLY_HT:
+                        updateHT(json_request)
+                    elif self.device_type == self.SHELLY_FLOOD:
+                        updateFlood(json_request)
+                    elif self.device_type == self.SHELLY_GAS:
+                        updateGAS(self, json_request)
+                    elif self.device_type == self.SHELLY_EM or self.device_type == self.SHELLY_3EM:
+                        updateEM(json_request, self)
+                    elif self.device_type == self.SHELLY_IX3:
+                        updateSHIX3(json_request)
+                else:
+                    Domoticz.Error("Failed to retrieve valid JSON from Shelly device.")
+                    
                 request_shelly_status.close()
             except requests.exceptions.Timeout as e:
-                Domoticz.Error(str(e))
+                Domoticz.Error(f"Timeout Error: {str(e)}")
+            except requests.exceptions.RequestException as e:
+                Domoticz.Error(f"HTTP Request Error: {str(e)}")
 
     def DumpConfigToLog(self):
         for x in Parameters:
