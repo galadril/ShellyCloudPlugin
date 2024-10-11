@@ -95,7 +95,6 @@ class BasePlugin:
 
     def onStart(self):
         Domoticz.Log("onStart called")
-        
         self.address = Parameters["Address"]
         self.username = Parameters["Username"]
         self.password = Parameters["Password"]
@@ -104,7 +103,6 @@ class BasePlugin:
         self.debug_level = int(Parameters.get("Mode3", -1))
 
         if self.debug_level != 0:
-            Domoticz.Debugging(self.debug_level)
             self.DumpConfigToLog()
 
         if self.heartbeat <= 0:
