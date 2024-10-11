@@ -43,7 +43,7 @@
             </options> 
         </param>
         <param field="Mode2" label="Heartbeat In Seconds" width="50px" required="true" default="30"/>
-        <param field="Mode3" label="Debug" width="200px">
+        <param field="Mode6" label="Debug" width="200px">
             <options>
                 <option label="None" value="0" default="true"/>
                 <option label="Python Only" value="2"/>
@@ -100,10 +100,13 @@ class BasePlugin:
         self.password = Parameters["Password"]
         self.device_type = Parameters["Mode1"]
         self.heartbeat = int(Parameters["Mode2"])
-        self.debug_level = int(Parameters.get("Mode3", -1))
 
-        if self.debug_level != 0:
-            self.DumpConfigToLog()
+        if Parameters["Mode6"] == "":
+            Parameters["Mode6"] = "-1"
+        if Parameters["Mode6"] != "0": 
+            Domoticz.Debugging(int(Parameters["Mode6"]))
+            DumpConfigToLog()
+        self.debug_level = int(Parameters.get("Mode6", -1))
 
         if self.heartbeat <= 0:
             Domoticz.Error("Heartbeat is set to a non-positive value; using default value of 30 seconds.")
